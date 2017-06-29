@@ -6,9 +6,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    server = new Server();
+    server->setInfoBlock(ui->teInfoBlock);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_pbStart_clicked() {
+    server->start();
+}
+
+void MainWindow::on_pbStop_clicked() {
+    server->stop();
 }
