@@ -8,20 +8,24 @@
 #include <QTextEdit>
 
 class Server : public QObject {
+    Q_OBJECT
+
 public:
     Server();
 public:
     QTcpServer *tcpServer;
-    int server_status;
-    QMap<int,QTcpSocket *> SClients;
+    int serverStatus;
+    QMap<int, QTcpSocket *> SClients;
 signals:
     void readyRead();
 public slots:
-    void newuser();
+    void newUser();
     void slotReadClient();
 private:
     QTextEdit *teInfoBlock;
+    int isNotRunning;
 public:
+    enum MessageType { sendId };
     void disconnectAll();
     void setInfoBlock(QTextEdit *_infoBlock);
     void start();
