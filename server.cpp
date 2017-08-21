@@ -64,6 +64,7 @@ void Server::newUser() {
         QTcpSocket* clientSocket = tcpServer->nextPendingConnection();
         int idusersocs = clientSocket->socketDescriptor();
         SClients[idusersocs] = clientSocket;
+//        qDebug() << "Хост: " << clientSocket->peerAddress() << " " << clientSocket->peerPort() << " " << clientSocket->peerName();
         connect(SClients[idusersocs], SIGNAL(readyRead()), this, SLOT(slotReadClient()));
     }
 }
@@ -71,13 +72,28 @@ void Server::newUser() {
 void Server::slotReadClient() {
     QTcpSocket* clientSocket = (QTcpSocket*)sender();
     int idusersocs = clientSocket->socketDescriptor();
-    QTextStream os(clientSocket);
-    os.setAutoDetectUnicode(true);
-    os << QDateTime::currentDateTime().toString();
+//    QTextStream os(clientSocket);
+//    os.setAutoDetectUnicode(true);
+//    os << QDateTime::currentDateTime().toString();
     QByteArray buf;
-    QDataStream in(clientSocket);
-    in.setVersion(QDataStream::Qt_5_8);
-    in >> buf;
-    qDebug() << buf.at(0);
-    teInfoBlock->append(QString::fromUtf8(buf));
+    QDataStream io(clientSocket);
+    io.setVersion(QDataStream::Qt_5_8);
+    if (clientSocket->bytesAvailable() == sizeof(qint8)) {
+        quint8 messageType;
+        io >> messageType;
+        if (messageType == MessageType::id) {
+            io << quint8(1);
+            if (clientSocket->waitForReadyRead()) {
+                io >> buf;
+                teInfoBlock->append(QString::fromUtf8(buf));
+            }
+        }
+        if (messageType == MessageType::message) {
+            io << quint8(1);
+            if (clientSocket->waitForReadyRead()) {
+                io >> buf;
+                teInfoBlock->append(QString::fromUtf8(buf));
+            }
+        }
+    }
 }

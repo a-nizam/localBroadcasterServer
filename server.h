@@ -25,7 +25,7 @@ private:
     QTextEdit *teInfoBlock;
     int isNotRunning;
 public:
-    enum MessageType { sendId };
+    enum MessageType { id, message };
     void disconnectAll();
     void setInfoBlock(QTextEdit *_infoBlock);
     void start();
